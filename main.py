@@ -1,7 +1,7 @@
 import discord, os, io, traceback, textwrap
 from discord.ext import commands
 from contextlib import redirect_stdout
-import inspect
+import json
 
 bot = commands.Bot(command_prefix="d?", intents = discord.Intents.all())
 TOKEN = os.environ['TOKEN']
@@ -90,6 +90,20 @@ async def _eval(ctx, *, body: str):
 for file in os.listdir('cogs/'):
     if file.endswith('.py'):
         bot.load_extension(f'cogs.{file[:-3]}')
-
-
+"""
+@bot.listen('on_message')
+async def check4bl(message):
+		role2 = discord.utils.get(message.guild.roles, id=851389137491197952)
+		role3 = discord.utils.get(message.guild.roles, id=851389163789615144)
+		role4 = discord.utils.get(message.guild.roles, id=851389179690745867)
+		user = message.author
+		with open('data/blacklist.json','r') as f:
+			black = json.load(f)
+		if str(message.author.id) in black["users"]:
+			print(f"{user.name} is blacklisted")
+			await user.add_roles(role2)
+			await user.add_roles(role3)
+			await user.add_roles(role4)
+		return # to think of a sys until thought of roles
+"""
 bot.run(TOKEN)

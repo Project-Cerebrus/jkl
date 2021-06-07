@@ -34,9 +34,7 @@ async def send_embed(ctx, embed):
 
 
 class Help(commands.Cog):
-	"""
-	Sends this help message
-	"""
+	"""Sends this help message"""
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -63,23 +61,26 @@ class Help(commands.Cog):
 					owner = owner
 
 				# starting to build embed
-				emb = discord.Embed(title='Commands and modules', color=discord.Color.blue(),
+				emb = discord.Embed(title='Commands and Modules', color=discord.Color.blue(),
 									description=f'Use `{prefix}help <module>` to gain more information about that module')
 
 				# iterating trough cogs, gathering descriptions
-				cogs_desc = ''
+				cogs_desc = '\n'
 				for cog in self.bot.cogs:
-					cogs_desc += f'`{cog}`: {self.bot.cogs[cog].__doc__}\n\n'
+					if cog == "Help" or cog == "blacklist":
+						pass
+					else:
+						cogs_desc += f'`{cog}`: {self.bot.cogs[cog].__doc__}\n\n'
 
 				# adding 'list' of cogs to embed
-				emb.add_field(name='Modules', value=cogs_desc, inline=False)
+				emb.add_field(name='Modules\n', value=cogs_desc, inline=False)
 
 				# integrating trough uncategorized commands
 				commands_desc = ''
 				for command in self.bot.walk_commands():
 					# if cog not in a cog
 					# listing command if cog name is None and command isn't hidden
-					if not command.cog_name and not command.hidden:
+					if not command.cog_name and not command.hidden and command.name != 'evaluate':
 						commands_desc += f'{command.name} - {command.help}\n'
 
 				# adding those commands to embed
@@ -87,7 +88,7 @@ class Help(commands.Cog):
 					emb.add_field(name='Not belonging to a module', value=commands_desc, inline=False)
 
 				# setting information about author
-				emb.add_field(name="About", value=f"This Bot is developed and maintained by <@775198018441838642> and <@746904488396324864> along with code help from <@750755612505407530>\nThis Bot is [open source](https://github.com/Ace-9999/Dank-Trades-Bot) and easily accessible.")
+				emb.add_field(name="About", value=f"This Bot is developed and maintained by **The Cerebrus Team**:\n<@775198018441838642>,<@746904488396324864> and <@750755612505407530>\nThis Bot is [open source](https://github.com/Project-Cerebrus/jkl) and easily accessible.")
 				emb.set_footer(text=f"Running {version} © The Cerebrus Team")
 
 		elif len(input) == 1:
@@ -98,8 +99,7 @@ class Help(commands.Cog):
 					if input[0].lower() in cog.lower():
 
 						# making title - getting description from doc-string below class
-						emb = discord.Embed(title=f'{cog} - Commands', description=self.bot.cogs[cog].__doc__,
-											color=discord.Color.green())
+						emb = discord.Embed(title=f'{cog} - Commands', description=self.bot.cogs[cog].__doc__,color=discord.Color.green())
 
 						# getting commands from cog
 						for command in self.bot.get_cog(cog).get_commands():
@@ -111,9 +111,14 @@ class Help(commands.Cog):
 				# if input not found
 				# yes, for-loops have an else statement, it's called when no 'break' was issued
 				else:
-					emb = discord.Embed(title="What's that?!",
-										description=f"I've never heard from a module called `{input[0]}` before :scream:",
-										color=discord.Color.orange())
+					for command in self.bot.commands:
+						print(input[0], command.name)
+						if input[0].lower() == command.name.lower() or input[0].lower() in command.aliases:
+							emb = discord.Embed(title=command.name, description = command.help, colour = discord.Color.green())
+						else:
+							emb = discord.Embed(title="What's that?!",
+												description=f"I've never heard from a module called `{input[0]}` before :scream:",
+												color=discord.Color.orange())
 
 			# too many cogs requested - only one at a time allowed
 		elif len(input) > 1:
