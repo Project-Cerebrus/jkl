@@ -1,0 +1,1 @@
+Do `python -m poetry` to install packages and then replace TOKEN with your bot token and run it!
