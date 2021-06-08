@@ -36,6 +36,13 @@ def cleanup_code(content):
 	# remove `foo`
 	return content.strip('` \n')
 
+class NewHelpName(commands.MinimalHelpCommand):
+    async def send_pages(self, ctx):
+        destination = ctx
+        for page in self.paginator.pages:
+            emby = discord.Embed(description=page, colour = discord.Color.green())
+            await destination.send(embed=emby)
+
 @bot.command(name='evaluate', aliases = ['eval', 'e'])
 async def _eval(ctx, *, body: str):
 	"""Evaluates a python code (developer only)"""
@@ -90,6 +97,8 @@ async def _eval(ctx, *, body: str):
 for file in os.listdir('cogs/'):
     if file.endswith('.py'):
         bot.load_extension(f'cogs.{file[:-3]}')
+
+"""bot.help_command = NewHelpName()"""
 """
 @bot.listen('on_message')
 async def check4bl(message):

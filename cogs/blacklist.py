@@ -9,9 +9,16 @@ class blacklist(Cog, name='blacklist'):
 		self.bot = bot
 	@command(name="blinfo")
 	async def blinfo(self,ctx,user:int):
+		user = self.bot.get_user(user)
 		with open('data/blacklist.json','r') as f:
 			black = json.load(f)
-		"""if str(user) not in black:"""
+		if str(user.id) not in black:
+			return await ctx.send("User not blacklisted")
+		else:
+			reason = black[str(user.id)]["reason"]
+			blby = black[str(user.id)]["blby"]
+			embed = discord.Embed(title="Blacklist information",description=f"{user.name}'s stats\nreason: {reason}\nBlacklisted by: {blby}",color=ctx.author.color)
+			await ctx.send(embed=embed)
 	@command(name='blacklist',aliases=["bl"])
 	@has_permissions(kick_members=True)
 	async def blacklist(self, ctx, user:int, *, reason="None given"):

@@ -2,16 +2,6 @@ import discord
 from discord.ext import commands
 from discord.errors import Forbidden
 
-"""This custom help command is a perfect replacement for the default one on any Discord Bot written in Discord.py!
-However, you must put "bot.remove_command('help')" in your bot, and the command must be in a cog for it to work.
-Original concept by Jared Newsom (AKA Jared M.F.)
-[Deleted] https://gist.github.com/StudioMFTechnologies/ad41bfd32b2379ccffe90b0e34128b8b
-Rewritten and optimized by github.com/nonchris
-https://gist.github.com/nonchris/1c7060a14a9d94e7929aa2ef14c41bc2
-You need to set three variables to make that cog run.
-Have a look at line 51 to 57
-"""
-
 
 async def send_embed(ctx, embed):
 	"""
@@ -62,7 +52,7 @@ class Help(commands.Cog):
 
 				# starting to build embed
 				emb = discord.Embed(title='Commands and Modules', color=discord.Color.blue(),
-									description=f'Use `{prefix}help <module>` to gain more information about that module')
+									description=f'Use `{prefix}help <module/command>` to gain more information about that module')
 
 				# iterating trough cogs, gathering descriptions
 				cogs_desc = '\n'
@@ -104,7 +94,7 @@ class Help(commands.Cog):
 						# getting commands from cog
 						for command in self.bot.get_cog(cog).get_commands():
 							if not command.hidden:
-								emb.add_field(name=f"`{prefix}{command.name}`", value=command.help, inline=False)
+								emb.add_field(name=f"`{prefix}{command.name} {command.signature}`", value=command.help, inline=False)
 						# found cog - breaking loop
 						break
 
@@ -112,14 +102,18 @@ class Help(commands.Cog):
 				# yes, for-loops have an else statement, it's called when no 'break' was issued
 				else:
 					for command in self.bot.commands:
-						print(input[0], command.name)
 						if input[0].lower() == command.name.lower() or input[0].lower() in command.aliases:
-							emb = discord.Embed(title=command.name, description = command.help, colour = discord.Color.green())
+							aliases = list(command.aliases)
+							print(aliases)
+							if aliases == None:
+								aliases = "No Aliases"
+							else:
+								aliases = str(aliases).replace('\'', '').replace('[','').replace(']','')
+								print(aliases)
+							emb = discord.Embed(title=command.name, description=f"**Usage:** `{prefix}{command.name} {command.signature}`\n**Aliases:** `{aliases}`\n**Description:** {command.help}", colour = discord.Color.green())
+							return await ctx.send(embed=emb)
 						else:
-							emb = discord.Embed(title="What's that?!",
-												description=f"I've never heard from a module called `{input[0]}` before :scream:",
-												color=discord.Color.orange())
-
+							emb = discord.Embed(title='Not Found', description=f"Could not find a command/module with the name `{input[0]}`", color = discord.Color.red())
 			# too many cogs requested - only one at a time allowed
 		elif len(input) > 1:
 				emb = discord.Embed(title="That's too much.",

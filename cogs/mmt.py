@@ -88,7 +88,7 @@ class mmt(Cog, name='Middleman Trades'):
 		sorted_list = sorted(leader_board, key=last)
 		final = ""
 		i = 0
-		while i < len(sorted_list):
+		while i < x:
 			item = sorted_list[i]
 			name = self.bot.get_user(int(item[0])).name
 			final += f"{i+1}. {name}: {item[1]}\n"
