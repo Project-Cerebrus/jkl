@@ -3,7 +3,7 @@ from discord.ext import commands
 from contextlib import redirect_stdout
 import json
 
-bot = commands.Bot(command_prefix="v?", intents = discord.Intents.all())
+bot = commands.Bot(command_prefix="f?", intents = discord.Intents.all())
 TOKEN = os.environ['TOKEN']
 bot.remove_command("help")
  #replace this with your token, DO NOT remove the "", put it inside them only

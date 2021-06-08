@@ -21,6 +21,13 @@ async def send_embed(ctx, embed):
 			await ctx.author.send(
 				f"Hey, seems like I can't send any message in {ctx.channel.name} on {ctx.guild.name}\n"
 				f"May you inform the server team about this issue? :slight_smile: ", embed=embed)
+def sortaliases(aliases):
+	if aliases == []:
+		aliases = "No Aliases"
+		return aliases
+	else:
+		aliases = str(aliases).replace('\'', '').replace('[','').replace(']','')
+		return aliases
 
 
 class Help(commands.Cog):
@@ -34,7 +41,7 @@ class Help(commands.Cog):
 		"""Shows all modules of that bot"""
 
 	# !SET THOSE VARIABLES TO MAKE THE COG FUNCTIONAL!
-		prefix = 'v?'
+		prefix = 'f?'
 		version =  'v0.5'
 		
 		# setting owner name - if you don't wanna be mentioned remove line 49-60 and adjust help text (line 88) 
@@ -103,11 +110,8 @@ class Help(commands.Cog):
 				for command in self.bot.commands:
 					if input.lower() == command.name.lower() or input.lower() in command.aliases:
 						aliases = list(command.aliases)
-						if aliases == None:
-							aliases = "No Aliases"
-						else:
-							aliases = str(aliases).replace('\'', '').replace('[','').replace(']','')
-						emb = discord.Embed(title=command.name, description=f"**Usage:** `{prefix}{command.name} {command.signature}`\n**Aliases:** `{aliases}`\n**Description:** {command.description}", colour = discord.Color.green())
+						aliases=sortaliases(aliases)
+						emb = discord.Embed(title=f"Command Help: {command.name}", description=f"**Usage:** `{prefix}{command.name} {command.signature}`\n**Aliases:** `{aliases}`\n**Description:** {command.help}", colour = discord.Color.green())
 						return await ctx.send(embed=emb)
 					else:
 						emb = discord.Embed(title='Not Found', description=f"Could not find a command/module with the name `{input}`", color = discord.Color.red())
