@@ -14,6 +14,17 @@ async def on_ready():
 	await bot.change_presence(status = discord.Status.do_not_disturb, activity=discord.Activity(type=discord.ActivityType.watching, name=f"Dank Trades Grow"))
 
 @bot.event
+async def on_member_join(member):
+	role2 = discord.utils.get(member.guild.roles, id=851389137491197952)
+	role3 = discord.utils.get(member.guild.roles, id=851389163789615144)
+	role4 = discord.utils.get(member.guild.roles, id=851389179690745867)
+	with open('data/blacklist.json','r') as f:
+		black = json.load(f)
+	if member.id in black and not black["reason"].startswith('Unblacklisted'):
+		await member.add_roles(role2, role3, role4)
+
+		
+@bot.event
 async def on_command_error(ctx,error):
 	if isinstance(error, commands.CommandOnCooldown):
 		return await ctx.send(error)

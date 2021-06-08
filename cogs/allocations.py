@@ -101,13 +101,25 @@ class allocations(Cog, name='Allocations'):
 	@has_permissions(manage_guild=True)
 	async def forceremove(self, ctx, user:discord.Member):
 		"""Allows admins to forceremove someone from a category"""
+		role1 = discord.utils.get(ctx.guild.roles, id=constants.Roles.SMOD)
+		role2 = discord.utils.get(ctx.guild.roles, id=constants.Roles.MOD)
+		role3 = discord.utils.get(ctx.guild.roles, id=constants.Roles.TMOD)
 		with open('data/allocs.json','r') as f:
 			main = json.load(f)
 		try:
 			categ = main["users"][str(user.id)]
 		except KeyError:
 			return await ctx.send('I could not find this user in my database.')
+		if role1 == user.top_role or role1 in user.roles:
+			type = "smods"
+		elif role2 == user.top_role or role2 in user.roles:
+			type = "mods"
+		elif role3 == user.top_role or role3 in user.roles:
+			type = "tmods"
+		else:
+			return await ctx.send('Could not detect if the user is a senior, trial or normal mod.')
 		main["main"][categ][type].remove(user.id)
+		del main["users"][str(user.id)]
 		with open('data/allocs.json','w') as f:
 			json.dump(main,f)
 		await ctx.send(f'Removed {user.name} from **{categ}**')

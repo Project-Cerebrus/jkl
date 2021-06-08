@@ -1,5 +1,5 @@
 from discord.ext.commands import Cog, command, has_permissions
-import discord, json
+import discord, json, datetime
 from library import funcs
 
 
@@ -23,6 +23,8 @@ class blacklist(Cog, name='blacklist'):
 		else:
 			reason = black[str(userid)]["reason"]
 			blby = black[str(userid)]["blby"]
+			if reason.startswith('Unblacklisted'):
+				return await ctx.send(f'User {reason}')
 			embed = discord.Embed(title="Blacklist Information",description=f"**Reason:** {reason}\n**Blacklisted by:** <@{blby}>",color=ctx.author.color)
 			try:
 				user = self.bot.get_user(userid)
@@ -44,12 +46,10 @@ class blacklist(Cog, name='blacklist'):
 		role2 = discord.utils.get(ctx.guild.roles, id=851389137491197952)
 		role3 = discord.utils.get(ctx.guild.roles, id=851389163789615144)
 		role4 = discord.utils.get(ctx.guild.roles, id=851389179690745867)
-		"""role2 = discord.utils.get(ctx.guild.roles, id=761540775523123220)
-		role3 = discord.utils.get(ctx.guild.roles, id=752263653495144538)"""
 		with open('data/blacklist.json','r') as f:
 			black = json.load(f)
 		user = ctx.guild.get_member(userid)
-		if userid in black:
+		if str(userid) in black:
 			return await ctx.send('Already Blacklisted.')
 		if not user:
 			black[str(user.id)] = {}
@@ -67,6 +67,41 @@ class blacklist(Cog, name='blacklist'):
 			await user.add_roles(role3)
 			await user.add_roles(role4)
 		await ctx.send(f'Blacklisted User <@{userid}> with reason - {reason}')
+
+	@command(name='unblacklist',aliases=["unbl" , "ubl"])
+	@has_permissions(kick_members=True)
+	async def unblacklist(self, ctx, user, *, reason="None given"):
+		"""UnBlacklist a user in or not in the server."""
+		try:
+			user = int(user)
+		except:
+			user = user.replace("<@","").replace("!","").replace(">","")
+		userid = int(user)
+		role2 = discord.utils.get(ctx.guild.roles, id=851389137491197952)
+		role3 = discord.utils.get(ctx.guild.roles, id=851389163789615144)
+		role4 = discord.utils.get(ctx.guild.roles, id=851389179690745867)
+		with open('data/blacklist.json','r') as f:
+			black = json.load(f)
+		user = ctx.guild.get_member(userid)
+		print(black)
+		if str(userid) not in black:
+			return await ctx.send('Already UnBlacklisted.')
+		if not user:
+			black[str(userid)] = {}
+			black[str(userid)]["reason"] = f"Unblacklisted by <@{ctx.author.id}> on {datetime.datetime.utcnow().strftime('%d')}"
+			black[str(userid)]["blby"] = ctx.author.id
+			with open('data/blacklist.json','w') as z:
+				json.dump(black,z)
+		else:
+			black[str(userid)] = {}
+			black[str(userid)]["reason"] = f"Unblacklisted by <@{ctx.author.id}> on {datetime.datetime.utcnow().strftime('%d %b')} with reason {reason}"
+			black[str(userid)]["blby"] = ctx.author.id
+			with open('data/blacklist.json','w') as z:
+				json.dump(black,z)
+			await user.remove_roles(role2)
+			await user.remove_roles(role3)
+			await user.remove_roles(role4)
+		await ctx.send(f'Unblacklisted User <@{userid}> with reason - {reason}')
 
 
 

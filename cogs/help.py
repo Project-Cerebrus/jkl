@@ -34,7 +34,7 @@ class Help(commands.Cog):
 		"""Shows all modules of that bot"""
 
 	# !SET THOSE VARIABLES TO MAKE THE COG FUNCTIONAL!
-		prefix = 'd?'
+		prefix = 'v?'
 		version =  'v0.5'
 		
 		# setting owner name - if you don't wanna be mentioned remove line 49-60 and adjust help text (line 88) 
@@ -101,18 +101,16 @@ class Help(commands.Cog):
 			# yes, for-loops have an else statement, it's called when no 'break' was issued
 			else:
 				for command in self.bot.commands:
-					if input.lower() == command.name.lower() or input[0].lower() in command.aliases:
+					if input.lower() == command.name.lower() or input.lower() in command.aliases:
 						aliases = list(command.aliases)
-						print(aliases)
 						if aliases == None:
 							aliases = "No Aliases"
 						else:
 							aliases = str(aliases).replace('\'', '').replace('[','').replace(']','')
-							print(aliases)
 						emb = discord.Embed(title=command.name, description=f"**Usage:** `{prefix}{command.name} {command.signature}`\n**Aliases:** `{aliases}`\n**Description:** {command.description}", colour = discord.Color.green())
 						return await ctx.send(embed=emb)
 					else:
-						emb = discord.Embed(title='Not Found', description=f"Could not find a command/module with the name `{input[0]}`", color = discord.Color.red())
+						emb = discord.Embed(title='Not Found', description=f"Could not find a command/module with the name `{input}`", color = discord.Color.red())
 
 			# sending reply embed using our own function defined above
 		await send_embed(ctx, emb)
