@@ -71,7 +71,7 @@ class Help(commands.Cog):
 					# if cog not in a cog
 					# listing command if cog name is None and command isn't hidden
 					if not command.cog_name and not command.hidden and command.name != 'evaluate':
-						commands_desc += f'{command.name} - {command.help}\n'
+						commands_desc += f'{command.name} - {command.description}\n'
 
 				# adding those commands to embed
 				if commands_desc:
@@ -82,38 +82,37 @@ class Help(commands.Cog):
 				emb.set_footer(text=f"Running {version} © The Cerebrus Team")
 
 		else:
+			for cog in self.bot.cogs:
+				if input.lower() in cog.lower():
+					found = False
 
-				# iterating trough cogs
-				for cog in self.bot.cogs:
-					# check if cog is the matching one
-					if input.lower() in cog.lower():
+					# making title - getting description from doc-string below class
+					emb = discord.Embed(title=f'{cog} - Commands', description=self.bot.cogs[cog].__doc__,color=discord.Color.green())
 
-						# making title - getting description from doc-string below class
-						emb = discord.Embed(title=f'{cog} - Commands', description=self.bot.cogs[cog].__doc__,color=discord.Color.green())
-
-						# getting commands from cog
-						for command in self.bot.get_cog(cog).get_commands():
+					# getting commands from cog
+					for command in self.bot.get_cog(cog).get_commands():
+						if found == False:
 							if not command.hidden:
 								emb.add_field(name=f"`{prefix}{command.name} {command.signature}`", value=command.help, inline=False)
-						# found cog - breaking loop
-						break
+					# found cog - breaking loop
+					found = True
 
-				# if input not found
-				# yes, for-loops have an else statement, it's called when no 'break' was issued
-				else:
-					for command in self.bot.commands:
-						if input.lower() == command.name.lower() or input[0].lower() in command.aliases:
-							aliases = list(command.aliases)
-							print(aliases)
-							if aliases == None:
-								aliases = "No Aliases"
-							else:
-								aliases = str(aliases).replace('\'', '').replace('[','').replace(']','')
-								print(aliases)
-							emb = discord.Embed(title=command.name, description=f"**Usage:** `{prefix}{command.name} {command.signature}`\n**Aliases:** `{aliases}`\n**Description:** {command.help}", colour = discord.Color.green())
-							return await ctx.send(embed=emb)
+			# if input not found
+			# yes, for-loops have an else statement, it's called when no 'break' was issued
+			else:
+				for command in self.bot.commands:
+					if input.lower() == command.name.lower() or input[0].lower() in command.aliases:
+						aliases = list(command.aliases)
+						print(aliases)
+						if aliases == None:
+							aliases = "No Aliases"
 						else:
-							emb = discord.Embed(title='Not Found', description=f"Could not find a command/module with the name `{input[0]}`", color = discord.Color.red())
+							aliases = str(aliases).replace('\'', '').replace('[','').replace(']','')
+							print(aliases)
+						emb = discord.Embed(title=command.name, description=f"**Usage:** `{prefix}{command.name} {command.signature}`\n**Aliases:** `{aliases}`\n**Description:** {command.description}", colour = discord.Color.green())
+						return await ctx.send(embed=emb)
+					else:
+						emb = discord.Embed(title='Not Found', description=f"Could not find a command/module with the name `{input[0]}`", color = discord.Color.red())
 
 			# sending reply embed using our own function defined above
 		await send_embed(ctx, emb)

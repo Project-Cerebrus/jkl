@@ -1,9 +1,9 @@
-import discord, os, io, traceback, textwrap
+import discord, os, io, traceback, textwrap, asyncio
 from discord.ext import commands
 from contextlib import redirect_stdout
 import json
 
-bot = commands.Bot(command_prefix="d?", intents = discord.Intents.all())
+bot = commands.Bot(command_prefix="v?", intents = discord.Intents.all())
 TOKEN = os.environ['TOKEN']
 bot.remove_command("help")
  #replace this with your token, DO NOT remove the "", put it inside them only
@@ -36,12 +36,17 @@ def cleanup_code(content):
 	# remove `foo`
 	return content.strip('` \n')
 
-class NewHelpName(commands.MinimalHelpCommand):
-    async def send_pages(self, ctx):
-        destination = ctx
-        for page in self.paginator.pages:
-            emby = discord.Embed(description=page, colour = discord.Color.green())
-            await destination.send(embed=emby)
+@bot.command(name='ping', aliases= ['latency'])
+async def _ping(ctx):
+	await ctx.send(f'**Pong!**\n    My Current Latency is {round(bot.latency*1000)} ms\n\nRunning v0.5 © The Cerebrus Team')
+
+@bot.command(name='purge', aliases = ['del'])
+@commands.has_permissions(manage_channels=True)
+async def purge(ctx, msgs:int):
+	await ctx.channel.purge(limit=msgs+1)
+	x=await ctx.send(f'Purged {msgs} messages.')
+	await asyncio.sleep(5)
+	await x.delete()
 
 @bot.command(name='evaluate', aliases = ['eval', 'e'])
 async def _eval(ctx, *, body: str):
@@ -97,8 +102,6 @@ async def _eval(ctx, *, body: str):
 for file in os.listdir('cogs/'):
     if file.endswith('.py'):
         bot.load_extension(f'cogs.{file[:-3]}')
-
-"""bot.help_command = NewHelpName()"""
 """
 @bot.listen('on_message')
 async def check4bl(message):

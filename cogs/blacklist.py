@@ -8,30 +8,39 @@ class blacklist(Cog, name='blacklist'):
 	def __init__(self, bot):
 		self.bot = bot
 
-
 	@command(name="blinfo")
-	async def blinfo(self,ctx,user:int):
+	async def blinfo(self,ctx,user):
 		"""Get the reason why the user was blacklisted and by whom."""
-		user = self.bot.get_user(user)
+		try:
+			user = int(user)
+		except:
+			user = user.replace("<@","").replace("!","").replace(">","")
+		userid = int(user)
 		with open('data/blacklist.json','r') as f:
 			black = json.load(f)
-		if str(user.id) not in black:
+		if str(userid) not in black:
 			return await ctx.send("User not blacklisted")
 		else:
-			reason = black[str(user.id)]["reason"]
-			blby = black[str(user.id)]["blby"]
-			embed = discord.Embed(title="Blacklist information",description=f"{user.name}'s stats\nreason: {reason}\nBlacklisted by: {blby}",color=ctx.author.color)
+			reason = black[str(userid)]["reason"]
+			blby = black[str(userid)]["blby"]
+			embed = discord.Embed(title="Blacklist Information",description=f"**Reason:** {reason}\n**Blacklisted by:** <@{blby}>",color=ctx.author.color)
+			try:
+				user = self.bot.get_user(userid)
+				embed.set_thumbnail(url=user.avatar_url)
+			except:
+				pass
 			await ctx.send(embed=embed)
 
 
 	@command(name='blacklist',aliases=["bl"])
 	@has_permissions(kick_members=True)
-	async def blacklist(self, ctx, user:int, *, reason="None given"):
+	async def blacklist(self, ctx, user, *, reason="None given"):
 		"""Blacklist a user in or not in the server. Roles will be auto-assigned on joining."""
-		if user == discord.Member:
-			userid = user.id
-		else:
-			userid = user
+		try:
+			user = int(user)
+		except:
+			user = user.replace("<@","").replace("!","").replace(">","")
+		userid = int(user)
 		role2 = discord.utils.get(ctx.guild.roles, id=851389137491197952)
 		role3 = discord.utils.get(ctx.guild.roles, id=851389163789615144)
 		role4 = discord.utils.get(ctx.guild.roles, id=851389179690745867)
@@ -57,7 +66,7 @@ class blacklist(Cog, name='blacklist'):
 			await user.add_roles(role2)
 			await user.add_roles(role3)
 			await user.add_roles(role4)
-		await ctx.send(f'Blacklisted User')
+		await ctx.send(f'Blacklisted User <@{userid}> with reason - {reason}')
 
 
 
