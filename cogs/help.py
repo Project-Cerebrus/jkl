@@ -30,7 +30,7 @@ class Help(commands.Cog):
 
 	@commands.command()
 	# @commands.bot_has_permissions(add_reactions=True,embed_links=True)
-	async def help(self, ctx, *input):
+	async def help(self, ctx, *,input):
 		"""Shows all modules of that bot"""
 
 	# !SET THOSE VARIABLES TO MAKE THE COG FUNCTIONAL!
@@ -81,12 +81,12 @@ class Help(commands.Cog):
 				emb.add_field(name="About", value=f"This Bot is developed and maintained by **The Cerebrus Team**:\n<@775198018441838642>,<@746904488396324864> and <@750755612505407530>\nThis Bot is [open source](https://github.com/Project-Cerebrus/jkl) and easily accessible.")
 				emb.set_footer(text=f"Running {version} © The Cerebrus Team")
 
-		elif len(input) == 1:
+		else:
 
 				# iterating trough cogs
 				for cog in self.bot.cogs:
 					# check if cog is the matching one
-					if input[0].lower() in cog.lower():
+					if input.lower() in cog.lower():
 
 						# making title - getting description from doc-string below class
 						emb = discord.Embed(title=f'{cog} - Commands', description=self.bot.cogs[cog].__doc__,color=discord.Color.green())
@@ -102,7 +102,7 @@ class Help(commands.Cog):
 				# yes, for-loops have an else statement, it's called when no 'break' was issued
 				else:
 					for command in self.bot.commands:
-						if input[0].lower() == command.name.lower() or input[0].lower() in command.aliases:
+						if input.lower() == command.name.lower() or input[0].lower() in command.aliases:
 							aliases = list(command.aliases)
 							print(aliases)
 							if aliases == None:
@@ -114,19 +114,6 @@ class Help(commands.Cog):
 							return await ctx.send(embed=emb)
 						else:
 							emb = discord.Embed(title='Not Found', description=f"Could not find a command/module with the name `{input[0]}`", color = discord.Color.red())
-			# too many cogs requested - only one at a time allowed
-		elif len(input) > 1:
-				emb = discord.Embed(title="That's too much.",
-									description="Please request only one module at once :sweat_smile:",
-									color=discord.Color.orange())
-
-		else:
-				emb = discord.Embed(title="It's a magical place.",
-									description="I don't know how you got here. But I didn't see this coming at all.\n"
-												"Would you please be so kind to report that issue to me on github?\n"
-												"https://github.com/nonchris/discord-fury/issues\n"
-												"Thank you! ~Chris",
-									color=discord.Color.red())
 
 			# sending reply embed using our own function defined above
 		await send_embed(ctx, emb)
