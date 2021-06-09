@@ -37,7 +37,7 @@ class Help(commands.Cog):
 
 	@commands.command()
 	# @commands.bot_has_permissions(add_reactions=True,embed_links=True)
-	async def help(self, ctx, *,input):
+	async def help(self, ctx, *,input=None):
 		"""Shows all modules of that bot"""
 
 	# !SET THOSE VARIABLES TO MAKE THE COG FUNCTIONAL!
@@ -78,7 +78,7 @@ class Help(commands.Cog):
 					# if cog not in a cog
 					# listing command if cog name is None and command isn't hidden
 					if not command.cog_name and not command.hidden and command.name != 'evaluate':
-						commands_desc += f'{command.name} - {command.description}\n'
+						commands_desc += f'{command.name} - {command.help}\n'
 
 				# adding those commands to embed
 				if commands_desc:
@@ -100,21 +100,23 @@ class Help(commands.Cog):
 					for command in self.bot.get_cog(cog).get_commands():
 						if found == False:
 							if not command.hidden:
-								emb.add_field(name=f"`{prefix}{command.name} {command.signature}`", value=command.help, inline=False)
-					# found cog - breaking loop
+								if command.aliases != []:
+									aliases = list(command.aliases)
+									aliases = str(aliases).replace('\'', '').replace('[','').replace(']','').replace(', ', '/')
+									emb.add_field(name=f"`{prefix}{command.name}/{aliases} {command.signature}`", value=command.help, inline=False)
+								else:
+									emb.add_field(name=f"`{prefix}{command.name} {command.signature}`", value=command.help, inline=False)
+					return await ctx.send(embed=emb)
 					found = True
-
-			# if input not found
-			# yes, for-loops have an else statement, it's called when no 'break' was issued
-			else:
-				for command in self.bot.commands:
-					if input.lower() == command.name.lower() or input.lower() in command.aliases:
-						aliases = list(command.aliases)
-						aliases=sortaliases(aliases)
-						emb = discord.Embed(title=f"Command Help: {command.name}", description=f"**Usage:** `{prefix}{command.name} {command.signature}`\n**Aliases:** `{aliases}`\n**Description:** {command.help}", colour = discord.Color.green())
-						return await ctx.send(embed=emb)
-					else:
-						emb = discord.Embed(title='Not Found', description=f"Could not find a command/module with the name `{input}`", color = discord.Color.red())
+				else:
+					for command in self.bot.commands:
+						if input.lower() == command.name.lower() or input.lower() in command.aliases:
+							aliases = list(command.aliases)
+							aliases=sortaliases(aliases)
+							emb = discord.Embed(title=f"Command Help: {command.name}", description=f"**Usage:** `{prefix}{command.name} {command.signature}`\n**Aliases:** `{aliases}`\n**Description:** {command.help}", colour = discord.Color.green())
+							return await ctx.send(embed=emb)
+						else:
+							emb = discord.Embed(title='Not Found', description=f"Could not find a command/module with the name `{input}`", color = discord.Color.red())
 
 			# sending reply embed using our own function defined above
 		await send_embed(ctx, emb)

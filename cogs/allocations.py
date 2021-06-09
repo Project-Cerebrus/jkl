@@ -10,7 +10,7 @@ class allocations(Cog, name='Allocations'):
 
 	@command(name='moderate', aliases = ('claim',))
 	async def _claim(self, ctx, *,category:str):
-		"""Allows you to claim your category"""
+		"""Allows Moderators to claim their category"""
 		role1 = discord.utils.get(ctx.guild.roles, id=constants.Roles.SMOD)
 		role2 = discord.utils.get(ctx.guild.roles, id=constants.Roles.MOD)
 		role3 = discord.utils.get(ctx.guild.roles, id=constants.Roles.TMOD)
@@ -35,7 +35,7 @@ class allocations(Cog, name='Allocations'):
 	
 	@command(name='mycategory')
 	async def mycateg(self,ctx):
-		"""Shows your category"""
+		"""Shows your (moderator only) category"""
 		role1 = discord.utils.get(ctx.guild.roles, id=constants.Roles.SMOD)
 		role2 = discord.utils.get(ctx.guild.roles, id=constants.Roles.MOD)
 		role3 = discord.utils.get(ctx.guild.roles, id=constants.Roles.TMOD)
@@ -52,7 +52,7 @@ class allocations(Cog, name='Allocations'):
 	@command(name='categories', aliases = ['allocations', 'allocs'])
 	@has_permissions(manage_guild=True)
 	async def categs(self, ctx):
-		"""Only admins, shows the list of all categories"""
+		"""Only admins, shows the list of all categories and the mods allocated to each category"""
 		with open('data/allocs.json','r') as f:
 			main = json.load(f)
 		final = ""
@@ -74,7 +74,7 @@ class allocations(Cog, name='Allocations'):
 	@command(name='forceassign', aliases= ['assign'])
 	@has_permissions(manage_guild=True)
 	async def forceassign(self, ctx, user:discord.Member, *, category:str):
-		"""Allows admins to forceassign someone to a category"""
+		"""Allows admins to forceassign someone to a category when they don't claim it themselves"""
 		role1 = discord.utils.get(ctx.guild.roles, id=constants.Roles.SMOD)
 		role2 = discord.utils.get(ctx.guild.roles, id=constants.Roles.MOD)
 		role3 = discord.utils.get(ctx.guild.roles, id=constants.Roles.TMOD)
@@ -100,7 +100,7 @@ class allocations(Cog, name='Allocations'):
 	@command(name='forceremove', aliases = ['remove'])
 	@has_permissions(manage_guild=True)
 	async def forceremove(self, ctx, user:discord.Member):
-		"""Allows admins to forceremove someone from a category"""
+		"""Allows admins to forceremove someone from a category when they resign or something"""
 		role1 = discord.utils.get(ctx.guild.roles, id=constants.Roles.SMOD)
 		role2 = discord.utils.get(ctx.guild.roles, id=constants.Roles.MOD)
 		role3 = discord.utils.get(ctx.guild.roles, id=constants.Roles.TMOD)
@@ -127,7 +127,7 @@ class allocations(Cog, name='Allocations'):
 	@command(name='resetcategs', aliases = ['resetallocs'])
 	@has_permissions(manage_guild=True)
 	async def _resetcategs(self,ctx):
-		"""Allows admins to reset all allocation data (careful)"""
+		"""Allows admins to reset all allocation data (irreversable)"""
 		data = {"main": {"general": {"smods": [], "mods": [], "tmods": []}, "trading and mm": {"smods": [], "mods": [], "tmods": []}, "modmail, support and fake events": {"smods": [], "mods": [], "tmods": []}, "appeals": {"smods": [], "mods": [], "tmods": []}}, "users": {}}
 		with open("data/allocs.json", "w") as f:
 			json.dump(data,f)

@@ -3,7 +3,7 @@ from discord.ext import commands
 from contextlib import redirect_stdout
 import json
 
-bot = commands.Bot(command_prefix="f?", intents = discord.Intents.all())
+bot = commands.Bot(command_prefix="v?", intents = discord.Intents.all())
 TOKEN = os.environ['TOKEN']
 bot.remove_command("help")
  #replace this with your token, DO NOT remove the "", put it inside them only
@@ -49,9 +49,10 @@ def cleanup_code(content):
 
 @bot.command(name='ping', aliases= ['latency'])
 async def _ping(ctx):
+	"""Shows the Ping Latency of the Bot."""
 	await ctx.send(f'**Pong!**\n    My Current Latency is {round(bot.latency*1000)} ms\n\nRunning v0.5 © The Cerebrus Team')
 
-@bot.command(name='purge', aliases = ['del'])
+@bot.command(name='purge', aliases = ['del'], hidden=True)
 @commands.has_permissions(manage_channels=True)
 async def purge(ctx, msgs:int):
 	await ctx.channel.purge(limit=msgs+1)

@@ -101,7 +101,7 @@ class mmt(Cog, name='Middleman Trades'):
 	@command(name='resetmmts', aliases = ['resetmmt'])
 	@has_permissions(manage_guild=True)
 	async def _resetcategs(self,ctx):
-		"""Resets complete middlemen data."""
+		"""Resets complete middlemen usage data. (irreversable)"""
 		data = {}
 		with open("data/allocs.json", "w") as f:
 			json.dump(data,f)
